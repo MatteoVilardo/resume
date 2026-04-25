@@ -3,8 +3,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight, Calendar, User, Briefcase, Cpu } from "lucide-react";
 import { cn } from "./utils/cn";
 
-export const ProjectModal = ({ project, isOpen, onClose }) => {
+export const ProjectModal = ({ project, isOpen, onClose, theme }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const accent = theme?.accent || "#3b82f6";
+  const primary = theme?.primary || "#60a5fa";
 
   useEffect(() => {
     setCurrentImageIndex(0);
@@ -38,18 +41,20 @@ export const ProjectModal = ({ project, isOpen, onClose }) => {
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            className="relative w-full max-w-4xl overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 shadow-3xl flex flex-col md:flex-row max-h-[85vh]"
+            className="relative w-full max-w-4xl overflow-hidden rounded-2xl bg-zinc-950 border shadow-3xl flex flex-col md:flex-row max-h-[85vh]"
+            style={{ borderColor: `${accent}33`, boxShadow: `0 0 50px ${accent}22` }}
           >
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 z-[110] p-2 rounded-full bg-black/50 text-white/70 hover:text-white transition-all border border-white/10 hover:bg-black/80"
+              className="absolute top-4 right-4 z-[110] p-2 rounded-full bg-black/50 text-white/70 hover:text-white transition-all border hover:bg-black/80"
+              style={{ borderColor: `${accent}44` }}
             >
               <X size={20} />
             </button>
 
-            {/* Left: Image Carousel (Fixed 4:3 Aspect Ratio for elegance) */}
-            <div className="relative w-full md:w-1/2 bg-neutral-950 overflow-hidden group aspect-[4/3] md:aspect-auto">
+            {/* Left: Image Carousel */}
+            <div className="relative w-full md:w-1/2 bg-black overflow-hidden group aspect-[4/3] md:aspect-auto border-r" style={{ borderColor: `${accent}22` }}>
               <AnimatePresence mode="wait">
                 <motion.img
                   key={currentImageIndex}
@@ -70,13 +75,15 @@ export const ProjectModal = ({ project, isOpen, onClose }) => {
                 <>
                   <button
                     onClick={prevImage}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 z-[110] p-2 rounded-full bg-black/40 text-white border border-white/5 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 z-[110] p-2 rounded-full bg-black/60 text-white border opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md"
+                    style={{ borderColor: `${accent}44` }}
                   >
                     <ChevronLeft size={20} />
                   </button>
                   <button
                     onClick={nextImage}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 z-[110] p-2 rounded-full bg-black/40 text-white border border-white/5 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 z-[110] p-2 rounded-full bg-black/60 text-white border opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md"
+                    style={{ borderColor: `${accent}44` }}
                   >
                     <ChevronRight size={20} />
                   </button>
@@ -91,9 +98,10 @@ export const ProjectModal = ({ project, isOpen, onClose }) => {
                           setCurrentImageIndex(index);
                         }}
                         className={cn(
-                          "h-1 rounded-full transition-all duration-300",
-                          index === currentImageIndex ? "w-6 bg-blue-500" : "w-1 bg-white/20 hover:bg-white/40"
+                          "h-1.5 rounded-full transition-all duration-300",
+                          index === currentImageIndex ? "w-6" : "w-1.5 opacity-50"
                         )}
+                        style={{ backgroundColor: index === currentImageIndex ? accent : "white" }}
                       />
                     ))}
                   </div>
@@ -102,33 +110,47 @@ export const ProjectModal = ({ project, isOpen, onClose }) => {
             </div>
 
             {/* Right: Content */}
-            <div className="w-full md:w-1/2 p-6 md:p-8 overflow-y-auto bg-zinc-900 flex flex-col border-t md:border-t-0 md:border-l border-white/5">
-              <div className="flex flex-wrap gap-1.5 mb-4">
+            <div className="w-full md:w-1/2 p-6 md:p-8 overflow-y-auto bg-zinc-950 flex flex-col relative">
+              <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+              
+              <div className="flex flex-wrap gap-1.5 mb-4 relative z-10">
                 {project.tags.map((tag) => (
-                  <span key={tag} className="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/10">
+                  <span 
+                    key={tag} 
+                    className="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border"
+                    style={{ 
+                      backgroundColor: `${accent}15`, 
+                      color: primary,
+                      borderColor: `${accent}33`
+                    }}
+                  >
                     {tag}
                   </span>
                 ))}
               </div>
 
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 tracking-tight leading-tight">{project.title}</h2>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 tracking-tight leading-tight relative z-10">{project.title}</h2>
               
-              <p className="text-zinc-400 text-sm leading-relaxed mb-6 font-medium">
+              <p className="text-zinc-400 text-sm leading-relaxed mb-6 font-medium relative z-10">
                 {project.longDescription || project.description}
               </p>
 
               {/* Metadata Grid */}
-              <div className="grid grid-cols-2 gap-4 pt-6 border-t border-white/5 mt-auto">
-                <MetaItem icon={<User size={14} />} label="Role" value={project.metadata?.role} />
-                <MetaItem icon={<Calendar size={14} />} label="Year" value={project.metadata?.year} />
-                <MetaItem icon={<Briefcase size={14} />} label="Client" value={project.metadata?.client} />
-                <MetaItem icon={<Cpu size={14} />} label="Stack" value={project.metadata?.tech} />
+              <div className="grid grid-cols-2 gap-4 pt-6 border-t mt-auto relative z-10" style={{ borderColor: `${accent}22` }}>
+                <MetaItem icon={<User size={14} />} label="Role" value={project.metadata?.role} themeColor={accent} />
+                <MetaItem icon={<Calendar size={14} />} label="Year" value={project.metadata?.year} themeColor={accent} />
+                <MetaItem icon={<Briefcase size={14} />} label="Client" value={project.metadata?.client} themeColor={accent} />
+                <MetaItem icon={<Cpu size={14} />} label="Stack" value={project.metadata?.tech} themeColor={accent} />
               </div>
               
-              <div className="mt-8">
+              <div className="mt-8 relative z-10">
                 <button 
                   onClick={onClose}
-                  className="w-full py-3 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-500 transition-all active:scale-[0.98] shadow-lg shadow-blue-500/20"
+                  className="w-full py-3 rounded-xl text-black text-sm font-bold transition-all active:scale-[0.98]"
+                  style={{ 
+                    backgroundColor: accent,
+                    boxShadow: `0 0 20px ${accent}44`
+                  }}
                 >
                   Close Project
                 </button>
@@ -141,9 +163,16 @@ export const ProjectModal = ({ project, isOpen, onClose }) => {
   );
 };
 
-const MetaItem = ({ icon, label, value }) => (
+const MetaItem = ({ icon, label, value, themeColor }) => (
   <div className="flex items-start gap-2.5">
-    <div className="p-1.5 rounded-md bg-blue-500/5 text-blue-500 border border-blue-500/10">
+    <div 
+      className="p-1.5 rounded-md border"
+      style={{ 
+        backgroundColor: `${themeColor}15`, 
+        color: themeColor,
+        borderColor: `${themeColor}33`
+      }}
+    >
       {icon}
     </div>
     <div>
